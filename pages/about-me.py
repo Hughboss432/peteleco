@@ -7,7 +7,7 @@ with col2:
     c1, c2 = st.columns([1,2])
     with c1:
         st.image(
-            '',
+            'pages/etc/dev.jpg',
             width=150
         )
     with c2:

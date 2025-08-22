@@ -2,13 +2,16 @@ import streamlit as st
 
 st.set_page_config(page_title='Projeto U1', layout='wide')
 
-col1, col2 = st.columns([1,5])
-with col1:
-    st.image('https://www.ufrn.br/resources/documentos/identidadevisual/brasao/brasao_gradiente.png', width=100)
-with col2:
-    st.markdown('• Universidade Federal do Rio Grande do Norte')
-    st.markdown('• Graduação em Ciências e Tecnologia')
-    st.markdown('• Princípios de Telecomunicações')
+with st.container(horizontal=True, horizontal_alignment='center', border=True):
+    col1, col2, col3= st.columns([3,1,1])
+    with col1:
+        col1, col2= st.columns([2,8])
+        with col1:
+            st.image('https://www.ufrn.br/resources/documentos/identidadevisual/brasao/brasao_gradiente.png', width=100)
+        with col2:
+            st.markdown('• Universidade Federal do Rio Grande do Norte')
+            st.markdown('• Graduação em Ciências e Tecnologia')
+            st.markdown('• Princípios de Telecomunicações')
 
 st.markdown('---')
 st.markdown(
@@ -24,9 +27,7 @@ st.markdown(
 st.markdown('---')
 
 # buttons for more info
-col1, col2, col3 = st.columns([1,2,1])
-with col1:
+with st.container(horizontal=True, horizontal_alignment='center'):
     st.link_button('Pagina do projeto','https://github.com/vicentesousa/DCO1005')
-with col3:
-    if st.button('Sobre mim'):
+    if st.button('Sobre mim >'):
         st.switch_page('pages/about-me.py')

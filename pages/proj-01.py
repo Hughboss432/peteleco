@@ -65,13 +65,13 @@ fs = np.ravel(mat_data[fs])                                      # ---
 signal = np.ravel(mat_data[x])                                   # ---
 
 if st.button("Executar FFT"):                                    # Executar FFT
-fft_vals = np.fft.fft(signal)                                    # FFT do sinal
-N = len(signal)                                                  # N pontos
-T = 1/fs                                                         # passo de tempo T
+    fft_vals = np.fft.fft(signal)                                # FFT do sinal
+    N = len(signal)                                              # N pontos
+    T = 1/fs                                                     # passo de tempo T
 
-fft_freq = np.fft.fftfreq(N, T)                                  # Frequencia valores no tempo
-fft_freq = fft_freq[:]/1000                                      # Ajuste para plot
-fft_magnitude = np.abs(fft_vals)                                 # Magnitude de espectro
+    fft_freq = np.fft.fftfreq(N, T)                              # Frequencia valores no tempo
+    fft_freq = fft_freq[:]/1000                                  # Ajuste para plot
+    fft_magnitude = np.abs(fft_vals)                             # Magnitude de espectro
 """, language="python")
             with tab2:
                 st.code(f"""
@@ -85,9 +85,7 @@ with tab1:                                                   # Sinal no tempo co
 
 with tab2:                                                   # Fast Fourier Transform
     fig_fft = go.Figure()
-    fig_fft.add_trace(go.Bar(x=fft_freq[:N//2], 
-                            y=fft_magnitude[:N//2], 
-                            name="FFT"))
+    fig_fft.add_trace(go.Bar(x=fft_freq[:N//2], y=fft_magnitude[:N//2], name="FFT"))
     fig_fft.update_layout(title="Espectro de Frequência", xaxis_title="Frequência (Hz)", yaxis_title="Magnitude")
     st.plotly_chart(fig_fft, use_container_width=True)
 """, language="python")
@@ -102,9 +100,7 @@ with tab2:                                                   # Fast Fourier Tran
 
             with tab2:
                 fig_fft = go.Figure()
-                fig_fft.add_trace(go.Bar(x=fft_freq[:N//2], 
-                                         y=fft_magnitude[:N//2], 
-                                         name="FFT"))
+                fig_fft.add_trace(go.Bar(x=fft_freq[:N//2], y=fft_magnitude[:N//2], name="FFT"))
                 fig_fft.update_layout(title="Espectro de Frequência", xaxis_title="Frequência (Hz)", yaxis_title="Magnitude")
                 st.plotly_chart(fig_fft, use_container_width=True)
             

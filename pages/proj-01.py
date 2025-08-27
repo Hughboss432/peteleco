@@ -19,6 +19,11 @@ st.write('O sinal x é composto por uma soma de 2 a 5 senos com frequências e f
 st.subheader('2 - A solução para nosso problema é utilizar uma Fast Fourier Trasform (FFT).')
 
 uploaded_file = st.file_uploader("Envie um arquivo .mat", type=["mat"])  # Upload do arquivo
+if uploaded_file is not None:
+    max_size_mb = 5                                                      # tamanho máximo permitido
+    if uploaded_file.size > max_size_mb * 1024 * 1024:
+        st.error(f"O arquivo é muito grande! Máximo permitido: {max_size_mb} MB")
+        uploaded_file = None                                             # ignora arquivo grande
 
 if uploaded_file is not None:
     try:                                                                 
@@ -30,16 +35,20 @@ if uploaded_file is not None:
         t_sample = st.selectbox("Selecione o vetor com os instantes das amostras do sinal", keys)
         fs = st.selectbox("Selecione o vetor frequência de amostragem (taxa de amostragem)", keys)
         
-        t_sample = np.ravel(mat_data[t_sample])                          # só pega o vetor quando selecionado 
+        t_sample = np.ravel(mat_data[t_sample])                          # formatar valores
         fs = np.ravel(mat_data[fs])                                      # ---
         signal = np.ravel(mat_data[x])                                   # ---
 
         if st.button("Executar FFT"):
-            fft_vals = np.fft.fft(signal)
-            fft_freq = np.fft.fftfreq(len(t_sample), 1/fs)
-            fft_magnitude = np.abs(fft_vals) / len(signal)
+            fft_vals = np.fft.fft(signal)                                # FFT do sinal
+            N = len(signal)                                              # N pontos
+            T = 1/fs                                                     # passo de tempo T
 
-            st.subheader("Códigos executados:")                            # Mostrar código
+            fft_freq = np.fft.fftfreq(N, T)                              # Frequencia valores no tempo
+            fft_freq = fft_freq[:]/1000                                  # Ajuste para plot
+            fft_magnitude = np.abs(fft_vals)                             # Magnitude de espectro
+
+            st.subheader("Códigos executados:")                          # Mostrar código
             tab1, tab2 = st.tabs(["Importando o arquivo .mat", "Plot de graficos"])
             with tab1:
                 st.code(f"""
@@ -51,14 +60,18 @@ x = st.selectbox("Selecione o vetor amostras dos sinal", keys)
 t_sample = st.selectbox("Selecione o vetor com os instantes das amostras do sinal", keys)
 fs = st.selectbox("Selecione o vetor frequência de amostragem (taxa de amostragem)", keys)
         
-t_sample = np.ravel(mat_data[t_sample])                          # Formata em vetor matlab para np
+t_sample = np.ravel(mat_data[t_sample])                          # Formata em vetores pelas chaves
 fs = np.ravel(mat_data[fs])                                      # ---
 signal = np.ravel(mat_data[x])                                   # ---
 
 if st.button("Executar FFT"):                                    # Executar FFT
-    fft_vals = np.fft.fft(signal)
-    fft_freq = np.fft.fftfreq(len(t_sample), 1/fs)
-    fft_magnitude = np.abs(fft_vals) / len(signal)
+fft_vals = np.fft.fft(signal)                                    # FFT do sinal
+N = len(signal)                                                  # N pontos
+T = 1/fs                                                         # passo de tempo T
+
+fft_freq = np.fft.fftfreq(N, T)                                  # Frequencia valores no tempo
+fft_freq = fft_freq[:]/1000                                      # Ajuste para plot
+fft_magnitude = np.abs(fft_vals)                                 # Magnitude de espectro
 """, language="python")
             with tab2:
                 st.code(f"""
@@ -72,9 +85,9 @@ with tab1:                                                   # Sinal no tempo co
 
 with tab2:                                                   # Fast Fourier Transform
     fig_fft = go.Figure()
-    fig_fft.add_trace(go.Bar(x=fft_freq[:len(fft_freq)//2], 
-                             y=fft_magnitude[:len(fft_magnitude)//2], 
-                             name="FFT"))
+    fig_fft.add_trace(go.Bar(x=fft_freq[:N//2], 
+                            y=fft_magnitude[:N//2], 
+                            name="FFT"))
     fig_fft.update_layout(title="Espectro de Frequência", xaxis_title="Frequência (Hz)", yaxis_title="Magnitude")
     st.plotly_chart(fig_fft, use_container_width=True)
 """, language="python")
@@ -89,8 +102,8 @@ with tab2:                                                   # Fast Fourier Tran
 
             with tab2:
                 fig_fft = go.Figure()
-                fig_fft.add_trace(go.Bar(x=fft_freq[:len(fft_freq)//2], 
-                                         y=fft_magnitude[:len(fft_magnitude)//2], 
+                fig_fft.add_trace(go.Bar(x=fft_freq[:N//2], 
+                                         y=fft_magnitude[:N//2], 
                                          name="FFT"))
                 fig_fft.update_layout(title="Espectro de Frequência", xaxis_title="Frequência (Hz)", yaxis_title="Magnitude")
                 st.plotly_chart(fig_fft, use_container_width=True)

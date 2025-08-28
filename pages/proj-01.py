@@ -2,6 +2,7 @@ import streamlit as st
 import numpy as np
 import plotly.graph_objects as go
 from scipy.io import loadmat
+from scipy.signal import find_peaks
 
 st.set_page_config(page_title="Projeto U1", layout="wide")
 
@@ -18,7 +19,7 @@ st.write('O sinal x é composto por uma soma de 2 a 5 senos com frequências e f
 
 st.subheader('2 - A solução para nosso problema é utilizar uma Fast Fourier Trasform (FFT).')
 
-uploaded_file = st.file_uploader("Envie um arquivo .mat", type=["mat"])  # Upload do arquivo
+uploaded_file = st.file_uploader("Envie o arquivo .mat", type=["mat"])  # Upload do arquivo
 if uploaded_file is not None:
     max_size_mb = 5                                                      # tamanho máximo permitido
     if uploaded_file.size > max_size_mb * 1024 * 1024:
@@ -48,8 +49,31 @@ if uploaded_file is not None:
             fft_freq = fft_freq[:]/1000                                  # Ajuste para plot
             fft_magnitude = np.abs(fft_vals)                             # Magnitude de espectro
 
-            st.subheader("Códigos executados:")                          # Mostrar código
-            tab1, tab2 = st.tabs(["Importando o arquivo .mat", "Plot de graficos"])
+            tab1, tab2, tab3 = st.tabs(["Sinal no tempo", "FFT", "Resultados"])              # Abas para gráficos
+            with tab1:
+                fig_time = go.Figure()
+                fig_time.add_trace(go.Scatter(x=t_sample, y=signal, mode="lines", name="Sinal"))
+                fig_time.update_layout(title="Sinal no Tempo", xaxis_title="Tempo (s)", yaxis_title="Amplitude")
+                st.plotly_chart(fig_time, use_container_width=True)
+
+            with tab2:
+                fig_fft = go.Figure()
+                fig_fft.add_trace(go.Bar(x=fft_freq[:N//2], y=fft_magnitude[:N//2], name="FFT"))
+                fig_fft.update_layout(title="Espectro de Frequência", xaxis_title="Frequência (Hz)", yaxis_title="Magnitude")
+                st.plotly_chart(fig_fft, use_container_width=True)
+            
+            with tab3:
+                peaks, _ = find_peaks(fft_magnitude, height=0.05)                   # Achando indices dos picos
+                peak_freqs = [fft_freq[peaks]]                                      # Achando valores com indices
+                peak_freqs = [peak for peak in peak_freqs[0] if peak > 0]           # Formatando
+                peak_magnitudes = fft_magnitude[peaks]                              # ---
+
+                st.write('Valores das frequências e respectivas fases dos senos:')
+                for freq, magnitude in zip(peak_freqs, peak_magnitudes):
+                    st.write(f"* Frequência: {freq:.2f} Hz, Magnitude: {magnitude:.2f}")
+
+            st.subheader("3 - Códigos executados.")                                 # Mostrar código
+            tab1, tab2, tab3 = st.tabs(["Tratando dados em .mat", "Plot de gráficos", "Achando picos"])
             with tab1:
                 st.code(f"""
 mat_data = loadmat('{uploaded_file.name}')                       # Carregar o .mat
@@ -75,35 +99,36 @@ if st.button("Executar FFT"):                                    # Executar FFT
 """, language="python")
             with tab2:
                 st.code(f"""
-tab1, tab2 = st.tabs(["Sinal no tempo", "FFT"])              # Abas para gráficos
+if st.button("Executar FFT"):
+    ...
+    tab1, tab2 = st.tabs(["Sinal no tempo", "FFT", "Resultados"])# Abas para gráficos
 
-with tab1:                                                   # Sinal no tempo com plotly
-    fig_time = go.Figure()
-    fig_time.add_trace(go.Scatter(x=t_sample, y=signal, mode="lines", name="Sinal"))
-    fig_time.update_layout(title="Sinal no Tempo", xaxis_title="Tempo (s)", yaxis_title="Amplitude")
-    st.plotly_chart(fig_time, use_container_width=True)
+    with tab1:                                                   # Sinal no tempo com plotly
+        fig_time = go.Figure()
+        fig_time.add_trace(go.Scatter(x=t_sample, y=signal, mode="lines", name="Sinal"))
+        fig_time.update_layout(title="Sinal no Tempo", xaxis_title="Tempo (s)", yaxis_title="Amplitude")
+        st.plotly_chart(fig_time, use_container_width=True)
 
-with tab2:                                                   # Fast Fourier Transform
-    fig_fft = go.Figure()
-    fig_fft.add_trace(go.Bar(x=fft_freq[:N//2], y=fft_magnitude[:N//2], name="FFT"))
-    fig_fft.update_layout(title="Espectro de Frequência", xaxis_title="Frequência (Hz)", yaxis_title="Magnitude")
-    st.plotly_chart(fig_fft, use_container_width=True)
+    with tab2:                                                   # Fast Fourier Transform
+        fig_fft = go.Figure()
+        fig_fft.add_trace(go.Bar(x=fft_freq[:N//2], y=fft_magnitude[:N//2], name="FFT"))
+        fig_fft.update_layout(title="Espectro de Frequência", xaxis_title="Frequência (Hz)", yaxis_title="Magnitude")
+        st.plotly_chart(fig_fft, use_container_width=True)
+""", language="python")
+            with tab3:
+                st.code(f"""
+    ...
+    with tab3:
+        peaks, _ = find_peaks(fft_magnitude, height=0.05)                   # Achando indices dos picos
+        peak_freqs = [fft_freq[peaks]]                                      # Achando valores com indices
+        peak_freqs = [peak for peak in peak_freqs[0] if peak > 0]           # Formatando
+        peak_magnitudes = fft_magnitude[peaks]                              # ---
+
+        st.write('Valores das frequências e respectivas fases dos senos:')
+        for freq, magnitude in zip(peak_freqs, peak_magnitudes):
+            st.write(f"* Frequency: {{freq:.2f}} Hz, Magnitude: {{magnitude:.2f}}")
 """, language="python")
 
-            tab1, tab2 = st.tabs(["Sinal no tempo", "FFT"])              # Abas para gráficos
-
-            with tab1:
-                fig_time = go.Figure()
-                fig_time.add_trace(go.Scatter(x=t_sample, y=signal, mode="lines", name="Sinal"))
-                fig_time.update_layout(title="Sinal no Tempo", xaxis_title="Tempo (s)", yaxis_title="Amplitude")
-                st.plotly_chart(fig_time, use_container_width=True)
-
-            with tab2:
-                fig_fft = go.Figure()
-                fig_fft.add_trace(go.Bar(x=fft_freq[:N//2], y=fft_magnitude[:N//2], name="FFT"))
-                fig_fft.update_layout(title="Espectro de Frequência", xaxis_title="Frequência (Hz)", yaxis_title="Magnitude")
-                st.plotly_chart(fig_fft, use_container_width=True)
-            
     except Exception as e:
         st.error(f"Erro ao carregar o arquivo: {e}")
 

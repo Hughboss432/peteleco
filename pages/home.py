@@ -11,14 +11,14 @@ with st.container(horizontal=True, horizontal_alignment='center', border=True):
         with col2:
             st.markdown('• Universidade Federal do Rio Grande do Norte')
             st.markdown('• Graduação em Ciências e Tecnologia')
-            st.markdown('• Princípios de Telecomunicações')
+            st.markdown('• DCO1005 - Princípios de Telecomunicações')
 
 st.markdown('---')
 st.markdown(
     '''
     <div style="text-align: center; margin-top: 50px; margin-bottom: 50px;">
         <h1 style="font-size: 48px; color: #1f77b4;">
-            📡​ Projeto U1
+            📡​ Projetos PETELECO
         </h1>
     </div>
     ''',

@@ -8,7 +8,7 @@ st.set_page_config(page_title="Projeto U1", layout="wide")
 
 st.title("Projeto U1")
 
-st.subheader('1 - Questão do projeto a ser resolvida.')
+st.subheader('1 - Questão do projeto.')
 st.write('No arquivo deste experimento temos um arquivo .mat com:')
 st.write('* fs: frequência de amostragem (taxa de amostragem)')
 st.write('* t_sample: vetor com os instantes das amostras do sinal')
@@ -64,8 +64,8 @@ if uploaded_file is not None:
             
             with tab3:
                 peaks, _ = find_peaks(fft_magnitude, height=0.05)                   # Achando indices dos picos
-                peak_freqs = [fft_freq[peaks]]                                      # Achando valores com indices
-                peak_freqs = [peak for peak in peak_freqs[0] if peak > 0]           # Formatando
+                peak_freqs = fft_freq[peaks]                                      # Achando valores com indices
+                peak_freqs = [peak for peak in peak_freqs if peak > 0]           # Formatando
                 peak_magnitudes = fft_magnitude[peaks]                              # ---
 
                 st.write('Valores das frequências e respectivas fases dos senos:')
@@ -101,15 +101,15 @@ if st.button("Executar FFT"):                                    # Executar FFT
                 st.code(f"""
 if st.button("Executar FFT"):
     ...
-    tab1, tab2 = st.tabs(["Sinal no tempo", "FFT", "Resultados"])# Abas para gráficos
+    tab1, tab2, tab3 = st.tabs(["Sinal no tempo", "FFT", "Resultados"]) # Abas para gráficos e respostas
 
-    with tab1:                                                   # Sinal no tempo com plotly
+    with tab1:                                                          # Sinal no tempo com plotly
         fig_time = go.Figure()
         fig_time.add_trace(go.Scatter(x=t_sample, y=signal, mode="lines", name="Sinal"))
         fig_time.update_layout(title="Sinal no Tempo", xaxis_title="Tempo (s)", yaxis_title="Amplitude")
         st.plotly_chart(fig_time, use_container_width=True)
 
-    with tab2:                                                   # Fast Fourier Transform
+    with tab2:                                                          # Fast Fourier Transform
         fig_fft = go.Figure()
         fig_fft.add_trace(go.Bar(x=fft_freq[:N//2], y=fft_magnitude[:N//2], name="FFT"))
         fig_fft.update_layout(title="Espectro de Frequência", xaxis_title="Frequência (Hz)", yaxis_title="Magnitude")
@@ -120,8 +120,8 @@ if st.button("Executar FFT"):
     ...
     with tab3:
         peaks, _ = find_peaks(fft_magnitude, height=0.05)                   # Achando indices dos picos
-        peak_freqs = [fft_freq[peaks]]                                      # Achando valores com indices
-        peak_freqs = [peak for peak in peak_freqs[0] if peak > 0]           # Formatando
+        peak_freqs = fft_freq[peaks]                                        # Achando valores com indices
+        peak_freqs = [peak for peak in peak_freqs if peak > 0]              # Formatando
         peak_magnitudes = fft_magnitude[peaks]                              # ---
 
         st.write('Valores das frequências e respectivas fases dos senos:')

@@ -17,7 +17,7 @@ st.write('O sinal x é composto por uma soma de 2 a 5 senos com frequências e f
         'Seu objetivo é, por meio do sinal , estimar quantos senos compõem o sinal, quais suas ' \
         'frequências e respectivas fases.')
 
-st.subheader('2 - A solução para nosso problema é utilizar uma Fast Fourier Trasform (FFT).')
+st.subheader('2 - A solução para nosso problema é utilizar uma Fast Fourier Transform (FFT).')
 
 uploaded_file = st.file_uploader("Envie o arquivo .mat", type=["mat"])  # Upload do arquivo
 if uploaded_file is not None:

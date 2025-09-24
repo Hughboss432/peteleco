@@ -43,7 +43,7 @@ if uploaded_file is not None:
         fs = np.ravel(mat_data[fs])                                      # ---
         signal = np.ravel(mat_data[x])                                   # ---
 
-        if st.button("Achar os resultados!"):
+        if st.button("Analisar Sinal"):
             fft_vals = np.fft.rfft(signal)                               # * FFT do sinal (r para parte positiva)
             N = len(signal)                                              # N pontos
             T = 1/fs                                                     # passo de tempo T
@@ -151,7 +151,7 @@ if st.button("Achar os resultados!"):
 """, language="python")
             with tab2:
                 st.code(f"""
-if st.button("Executar FFT"):
+if st.button("Analisar Sinal"):
     ...
     tab1, tab2, tab3 = st.tabs(["Sinal no tempo", "FFT", "Resultados"]) # Abas para gráficos e respostas
 

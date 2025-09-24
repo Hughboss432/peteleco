@@ -1,6 +1,7 @@
 import streamlit as st
 import numpy as np
 import plotly.graph_objects as go
+import pandas as pd
 from scipy.io import loadmat
 from scipy.signal import find_peaks
 
@@ -17,9 +18,11 @@ st.write('O sinal x é composto por uma soma de 2 a 5 senos com frequências e f
         'Seu objetivo é, por meio do sinal , estimar quantos senos compõem o sinal, quais suas ' \
         'frequências e respectivas fases.')
 
-st.subheader('2 - A solução para nosso problema é utilizar uma Fast Fourier Transform (FFT).')
+st.subheader(
+    '2 - A solução para nosso problema é utilizar uma Fast Fourier Transform (FFT) e analisar as fases com um Phase Spectrum.'
+)
 
-uploaded_file = st.file_uploader("Envie o arquivo .mat", type=["mat"])  # Upload do arquivo
+uploaded_file = st.file_uploader("Envie o arquivo .mat", type=["mat"])   # Upload do arquivo
 if uploaded_file is not None:
     max_size_mb = 5                                                      # tamanho máximo permitido
     if uploaded_file.size > max_size_mb * 1024 * 1024:
@@ -40,16 +43,36 @@ if uploaded_file is not None:
         fs = np.ravel(mat_data[fs])                                      # ---
         signal = np.ravel(mat_data[x])                                   # ---
 
-        if st.button("Executar FFT"):
-            fft_vals = np.fft.fft(signal)                                # FFT do sinal
+        if st.button("Achar os resultados!"):
+            fft_vals = np.fft.rfft(signal)                               # * FFT do sinal (r para parte positiva)
             N = len(signal)                                              # N pontos
             T = 1/fs                                                     # passo de tempo T
 
-            fft_freq = np.fft.fftfreq(N, T)                              # Frequencia valores no tempo
+            fft_freq = np.fft.rfftfreq(N, T)                             # Frequencia valores no tempo
             fft_freq = fft_freq[:]/1000                                  # Ajuste para plot
             fft_magnitude = np.abs(fft_vals)                             # Magnitude de espectro
 
-            tab1, tab2, tab3 = st.tabs(["Sinal no tempo", "FFT", "Resultados"])              # Abas para gráficos
+            peaks, _ = find_peaks(fft_magnitude, height=0.05)            # Achando indices dos picos
+            peak_freqs = fft_freq[peaks]                                 # Achando valores com indices
+            peak_magnitudes = fft_magnitude[peaks]                       # ---
+
+            df_fft = pd.DataFrame({                                      # Formatando dados em uma tabela
+                "Frequência(Hz)": peak_freqs,                   
+                "Magnitude": peak_magnitudes,
+            })          
+            df_fft.index = range(1, len(df_fft) + 1)                     # ---
+                                                                         # * Espectro de Fase
+            mask_phase = np.abs(fft_vals) > 1e-3                         # Só mantém se a amplitude for relevante
+            phase = np.angle(fft_vals, deg=True)                         # Angulos em graus do sinal
+
+            phase_peaks = phase[peaks]                                   # Formatando dados em uma tabela
+            df_phase = pd.DataFrame({                                    # ---
+                "Frequência(Hz)": peak_freqs,                   
+                "Graus": phase_peaks,
+            })
+            df_phase.index = range(1, len(df_fft) + 1)
+
+            tab1, tab2, tab3 = st.tabs(["Sinal no tempo", "FFT", "Resultados"]) # Abas para gráficos
             with tab1:
                 fig_time = go.Figure()
                 fig_time.add_trace(go.Scatter(x=t_sample, y=signal, mode="lines", name="Sinal"))
@@ -63,17 +86,26 @@ if uploaded_file is not None:
                 st.plotly_chart(fig_fft, use_container_width=True)
             
             with tab3:
-                peaks, _ = find_peaks(fft_magnitude, height=0.05)                   # Achando indices dos picos
-                peak_freqs = fft_freq[peaks]                                      # Achando valores com indices
-                peak_freqs = [peak for peak in peak_freqs if peak > 0]           # Formatando
-                peak_magnitudes = fft_magnitude[peaks]                              # ---
+                st.write(
+                    "* Tabela com frequências e magnitudes dos senos encontrados usando 'find_peaks':", 
+                    df_fft, 
+                    f"Como podemos ver, encontramos {len(df_fft)} senos!"
+                )
 
-                st.write('Valores das frequências e respectivas fases dos senos:')
-                for freq, magnitude in zip(peak_freqs, peak_magnitudes):
-                    st.write(f"* Frequência: {freq:.2f} Hz, Magnitude: {magnitude:.2f}")
+                st.write("* Podemos encontrar o Espectro de Fase com os angulos usando 'np.angle':")  # Achando fases do sinal
 
-            st.subheader("3 - Códigos executados.")                                 # Mostrar código
-            tab1, tab2, tab3 = st.tabs(["Tratando dados em .mat", "Plot de gráficos", "Achando picos"])
+                fig_phase = go.Figure()                                                               # Plot da fase na frequência
+                fig_phase.add_trace(go.Scatter(x=fft_freq[mask_phase], y=phase[mask_phase], name="Phase Spectrum"))
+                fig_phase.update_layout(title="Espectro de Fase", xaxis_title="Frequência (Hz)", yaxis_title="Fases(graus)")
+                st.plotly_chart(fig_phase, use_container_width=True)
+
+                st.write(
+                    "* Encontramos como resultado final usando 'np.angle' os graus das fases!", 
+                    df_phase
+                )
+
+            st.subheader("3 - Códigos executados.")                                  # Mostrar código
+            tab1, tab2, tab3 = st.tabs(["Tratando dados em .mat", "Plot de gráficos", "Resultados"])
             with tab1:
                 st.code(f"""
 mat_data = loadmat('{uploaded_file.name}')                       # Carregar o .mat
@@ -88,14 +120,34 @@ t_sample = np.ravel(mat_data[t_sample])                          # Formata em ve
 fs = np.ravel(mat_data[fs])                                      # ---
 signal = np.ravel(mat_data[x])                                   # ---
 
-if st.button("Executar FFT"):                                    # Executar FFT
-    fft_vals = np.fft.fft(signal)                                # FFT do sinal
+if st.button("Achar os resultados!"):
+    fft_vals = np.fft.rfft(signal)                               # * FFT do sinal (r para parte positiva)
     N = len(signal)                                              # N pontos
     T = 1/fs                                                     # passo de tempo T
 
-    fft_freq = np.fft.fftfreq(N, T)                              # Frequencia valores no tempo
+    fft_freq = np.fft.rfftfreq(N, T)                             # Frequencia valores no tempo
     fft_freq = fft_freq[:]/1000                                  # Ajuste para plot
     fft_magnitude = np.abs(fft_vals)                             # Magnitude de espectro
+
+    peaks, _ = find_peaks(fft_magnitude, height=0.05)            # Achando indices dos picos
+    peak_freqs = fft_freq[peaks]                                 # Achando valores com indices
+    peak_magnitudes = fft_magnitude[peaks]                       # ---
+
+    df_fft = pd.DataFrame({{                                      # Formatando dados em uma tabela
+        "Frequência(Hz)": peak_freqs,                   
+        "Magnitude": peak_magnitudes,
+    }})          
+    df_fft.index = range(1, len(df_fft) + 1)                     # ---
+                                                                 # * Espectro de Fase
+    mask_phase = np.abs(fft_vals) > 1e-3                         # Só mantém se a amplitude for relevante
+    phase = np.angle(fft_vals, deg=True)                         # Angulos em graus do sinal
+
+    phase_peaks = phase[peaks]                                   # Formatando dados em uma tabela
+    df_phase = pd.DataFrame({{                                   # ---
+        "Frequência(Hz)": peak_freqs,                   
+        "Graus": phase_peaks,
+    }})
+    df_phase.index = range(1, len(df_fft) + 1)
 """, language="python")
             with tab2:
                 st.code(f"""
@@ -119,14 +171,23 @@ if st.button("Executar FFT"):
                 st.code(f"""
     ...
     with tab3:
-        peaks, _ = find_peaks(fft_magnitude, height=0.05)                   # Achando indices dos picos
-        peak_freqs = fft_freq[peaks]                                        # Achando valores com indices
-        peak_freqs = [peak for peak in peak_freqs if peak > 0]              # Formatando
-        peak_magnitudes = fft_magnitude[peaks]                              # ---
+        st.write(
+            "* Tabela com frequências e magnitudes dos senos encontrados usando 'find_peaks':", 
+            df_fft, 
+            f"Como podemos ver, encontramos {{len(df_fft)}} senos!"
+        )
 
-        st.write('Valores das frequências e respectivas fases dos senos:')
-        for freq, magnitude in zip(peak_freqs, peak_magnitudes):
-            st.write(f"* Frequency: {{freq:.2f}} Hz, Magnitude: {{magnitude:.2f}}")
+        st.write("* Podemos encontrar o Espectro de Fase com os angulos usando 'np.angle':")  # Achando fases do sinal
+
+        fig_phase = go.Figure()                                                               # Plot da fase na frequência
+        fig_phase.add_trace(go.Scatter(x=fft_freq[mask_phase], y=phase[mask_phase], name="Phase Spectrum"))
+        fig_phase.update_layout(title="Espectro de Fase", xaxis_title="Frequência (Hz)", yaxis_title="Fases(graus)")
+        st.plotly_chart(fig_phase, use_container_width=True)
+
+        st.write(
+            "* Encontramos como resultado final usando 'np.angle' os graus das fases!", 
+            df_phase
+        )
 """, language="python")
 
     except Exception as e:

@@ -259,13 +259,13 @@ with tab3:
         # Definindo subplots
         fig_subplots = make_subplots(rows=3, cols=1, subplot_titles=("Envoltória ideal", "Onda AM retificada", "Envoltória recuperada"))
         # Envoltoria ideal
-        fig_subplots.add_trace(go.Scatter(x=t*1000, y=x_envIdeal, mode='lines'), row=1, col=1)
+        fig_subplots.add_trace(go.Scatter(x=t*1000, y=x_envIdeal, mode='lines', name="Envoltória ideal"), row=1, col=1)
         fig_subplots.update_yaxes(title_text="Amplitude", row=1, col=1)
         # Onda AM retificada
-        fig_subplots.add_trace(go.Scatter(x=t*1000, y=x_AM, mode='lines'), row=2, col=1)
+        fig_subplots.add_trace(go.Scatter(x=t*1000, y=x_AM, mode='lines', name="Onda AM retificada"), row=2, col=1)
         fig_subplots.update_yaxes(title_text="Amplitude", row=2, col=1)
         # Envoltoria recuperada
-        fig_subplots.add_trace(go.Scatter(x=t*1000, y=x_env, mode='lines'), row=3, col=1)
+        fig_subplots.add_trace(go.Scatter(x=t*1000, y=x_env, mode='lines', name="Envoltória recuperada"), row=3, col=1)
         fig_subplots.update_yaxes(title_text="Amplitude", row=3, col=1)
         fig_subplots.update_xaxes(title_text="Tempo (ms)", row=3, col=1)
 

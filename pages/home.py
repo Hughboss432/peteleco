@@ -28,6 +28,5 @@ st.markdown('---')
 
 # buttons for more info
 with st.container(horizontal=True, horizontal_alignment='center'):
-    st.link_button('Pagina do projeto','https://github.com/vicentesousa/DCO1005')
     if st.button('Sobre mim >'):
         st.switch_page('pages/about-me.py')

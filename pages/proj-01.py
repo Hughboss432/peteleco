@@ -88,13 +88,13 @@ if uploaded_file is not None:
                 fig_time = go.Figure()
                 fig_time.add_trace(go.Scatter(x=t_sample, y=signal, mode="lines", name="Sinal"))
                 fig_time.update_layout(title="Sinal no Tempo", xaxis_title="Tempo (s)", yaxis_title="Amplitude")
-                st.plotly_chart(fig_time, use_container_width=True)
+                st.plotly_chart(fig_time)
 
             with tab2:
                 fig_fft = go.Figure()
                 fig_fft.add_trace(go.Bar(x=fft_freq[:N//2], y=fft_magnitude[:N//2], name="FFT"))
                 fig_fft.update_layout(title="Espectro de Frequência", xaxis_title="Frequência (Hz)", yaxis_title="Magnitude")
-                st.plotly_chart(fig_fft, use_container_width=True)
+                st.plotly_chart(fig_fft)
             
             with tab3:
                 st.write(
@@ -108,7 +108,7 @@ if uploaded_file is not None:
                 fig_phase = go.Figure()                                                               # Plot da fase na frequência
                 fig_phase.add_trace(go.Scatter(x=fft_freq[mask_phase], y=phase[mask_phase], name="Phase Spectrum"))
                 fig_phase.update_layout(title="Espectro de Fase", xaxis_title="Frequência (Hz)", yaxis_title="Fases(graus)")
-                st.plotly_chart(fig_phase, use_container_width=True)
+                st.plotly_chart(fig_phase)
 
                 st.write(
                     "Encontramos como resultado final usando 'np.angle' os graus das fases!", 
@@ -175,13 +175,13 @@ if st.button("Analisar Sinal"):
         fig_time = go.Figure()
         fig_time.add_trace(go.Scatter(x=t_sample, y=signal, mode="lines", name="Sinal"))
         fig_time.update_layout(title="Sinal no Tempo", xaxis_title="Tempo (s)", yaxis_title="Amplitude")
-        st.plotly_chart(fig_time, use_container_width=True)
+        st.plotly_chart(fig_time)
 
     with tab2:                                                          # Fast Fourier Transform
         fig_fft = go.Figure()
         fig_fft.add_trace(go.Bar(x=fft_freq[:N//2], y=fft_magnitude[:N//2], name="FFT"))
         fig_fft.update_layout(title="Espectro de Frequência", xaxis_title="Frequência (Hz)", yaxis_title="Magnitude")
-        st.plotly_chart(fig_fft, use_container_width=True)
+        st.plotly_chart(fig_fft)
 """, language="python")
             with tab3:
                 st.code(f"""
@@ -198,7 +198,7 @@ if st.button("Analisar Sinal"):
         fig_phase = go.Figure()                                                               # Plot da fase na frequência
         fig_phase.add_trace(go.Scatter(x=fft_freq[mask_phase], y=phase[mask_phase], name="Phase Spectrum"))
         fig_phase.update_layout(title="Espectro de Fase", xaxis_title="Frequência (Hz)", yaxis_title="Fases(graus)")
-        st.plotly_chart(fig_phase, use_container_width=True)
+        st.plotly_chart(fig_phase)
 
         st.write(
             "Encontramos como resultado final usando 'np.angle' os graus das fases!", 

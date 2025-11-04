@@ -125,7 +125,7 @@ def mod_am_dsb(Ac,Am):
 
   # Gráfico do AM-DSB na frequência usando Plotly
   fig_freq = go.Figure()
-  fig_freq.add_trace(go.Scatter(x=freq/1e3, y=S_f_new, mode='lines')) # Use lines instead of stem for plotly
+  fig_freq.add_trace(go.Bar(x=freq/1e3, y=S_f_new))
   fig_freq.update_layout(title=f"AM-DSB na frequência",
                          xaxis_title="Frequência [kHz]",
                          yaxis_title="Magnitude")
@@ -172,7 +172,7 @@ with tab3:
 
         # Gráfico do AM-DSB na frequência usando Plotly
         fig_freq = go.Figure()
-        fig_freq.add_trace(go.Scatter(x=freq/1e3, y=S_f_new, mode='lines')) # Use lines instead of stem for plotly
+        fig_freq.add_trace(go.Bar(x=freq/1e3, y=S_f_new))
         fig_freq.update_layout(title=f"AM-DSB na frequência",
                                 xaxis_title="Frequência [kHz]",
                                 yaxis_title="Magnitude")
@@ -181,16 +181,16 @@ with tab3:
 
     st.write('* Aplicando 100% de modulação alterando a amplitude da portadora(Ac):')
     u_mod_t, u_mod_f = mod_am_dsb(Ac=1.4,Am=1.4)
-    st.plotly_chart(u_mod_t, use_container_width=True)
-    st.plotly_chart(u_mod_f, use_container_width=True)
+    st.plotly_chart(u_mod_t)
+    st.plotly_chart(u_mod_f)
     st.write('* Aplicando submodulação alterando a amplitude da portadora(Ac):')
     sub_mod_t, sub_mod_f = mod_am_dsb(Ac=2.8,Am=1.4)
-    st.plotly_chart(sub_mod_t, use_container_width=True)
-    st.plotly_chart(sub_mod_f, use_container_width=True)
+    st.plotly_chart(sub_mod_t)
+    st.plotly_chart(sub_mod_f)
     st.write('* Aplicando sobremodulação alterando a amplitude da portadora(Ac):')
     sob_mod_t, sob_mod_f = mod_am_dsb(Ac=0.7,Am=1.4)
-    st.plotly_chart(sob_mod_t, use_container_width=True)
-    st.plotly_chart(sob_mod_f, use_container_width=True)
+    st.plotly_chart(sob_mod_t)
+    st.plotly_chart(sob_mod_f)
 
 st.markdown('---')
 
@@ -416,18 +416,18 @@ with tab3:
     st.write('* Aplicando erro médio quadrático para τ = 1e-1: ')
     t1_p1, t1_p2, mse1 = det_env(1e-1)
     st.write(f'Erro médio quadrático para τ = {1e-1}: {mse1:.2e}.')
-    st.plotly_chart(t1_p1, use_container_width=True)
-    st.plotly_chart(t1_p2, use_container_width=True)
+    st.plotly_chart(t1_p1)
+    st.plotly_chart(t1_p2)
     st.write('* Aplicando erro médio quadrático para τ = 2e-4:')
     t2_p1, t2_p2, mse2 = det_env(2e-4)
     st.write(f'Erro médio quadrático para τ = {2e-4}: {mse2:.2e}.')
-    st.plotly_chart(t2_p1, use_container_width=True)
-    st.plotly_chart(t2_p2, use_container_width=True)
+    st.plotly_chart(t2_p1)
+    st.plotly_chart(t2_p2)
     st.write('* Aplicando erro médio quadrático para τ = 4e-3:')
     t3_p1, t3_p2, mse3 = det_env(4e-3)
     st.write(f'Erro médio quadrático para τ = {4e-3}: {mse3:.2e}.')
-    st.plotly_chart(t3_p1, use_container_width=True)
-    st.plotly_chart(t3_p2, use_container_width=True)
+    st.plotly_chart(t3_p1)
+    st.plotly_chart(t3_p2)
 
 st.markdown('---')
 

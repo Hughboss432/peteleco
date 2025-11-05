@@ -314,45 +314,30 @@ def deteccao_envelope(tau):
           out *= (1-Ts/tau)    # Caso 2: x_am(t) < Vc(t) (descarga do capacitor)
       x_env[i] = out
 
-  # gráfico composto usando Plotly
-  fig = go.Figu ideal
-  fig_subplots.add_trace(go.Scatter(x=t*1000, y=x_envIdeal, mode='lines'), row=1, col=1)
-  fig_subplots.update_yaxes(title_text="Amplitude", row=1, col=1)
-  # Onda AM retificada
-  fig_subplots.add_trace(go.Scatter(x=t*1000, y=x_AM, mode='lines'), row=2, col=1)
-  fig_subplots.update_yaxes(title_text="Amplitude", row=2, col=1)
-  # Envoltoria recuperada
-  fig_subplots.add_trace(go.Scatter(x=t*1000, y=x_env, mode='lines'), row=3, col=1)
-  fig_subplots.update_yaxes(title_text="Amplitude", row=3, col=1)
-  fig_subplots.update_xaxes(title_text="Tempo (ms)", row=3, col=1)
+  mse = np.mean((x_envIdeal - x_env) ** 2)                        # erro quadratico
 
-  fig_subplots.show()
-
-  return x_envIdeal, x_envre()
-  fig.add_trace(go.Scatter(x=t*1000, y=x_envIdeal, mode='lines', name='Envoltória ideal'))
-  fig.add_trace(go.Scatter(x=t*1000, y=x_AM, mode='lines', name='Onda AM retificada'))
-  fig.add_trace(go.Scatter(x=t*1000, y=x_env, mode='lines', name='Envoltória recuperada'))
-  fig.update_layout(title=f"Detecção de envoltória (τ = {tau:.2e})",
-                    xaxis_title="Tempo (ms)",
-                    yaxis_title="Amplitude")
-  fig.show()
+  fig1 = go.Figure()                                              # plot composto
+  fig1.add_trace(go.Scatter(x=t*1000, y=x_envIdeal, mode='lines', name='Envoltória ideal'))
+  fig1.add_trace(go.Scatter(x=t*1000, y=x_AM, mode='lines', name='Onda AM retificada'))
+  fig1.add_trace(go.Scatter(x=t*1000, y=x_env, mode='lines', name='Envoltória recuperada'))
+  fig1.update_layout(title=f"Detecção de envoltória (τ = {{tau:.2e}})",
+                      xaxis_title="Tempo (ms)",
+                      yaxis_title="Amplitude")
 
   # Definindo subplots
   fig_subplots = make_subplots(rows=3, cols=1, subplot_titles=("Envoltória ideal", "Onda AM retificada", "Envoltória recuperada"))
-  # Envoltoria
-  fig_subplots.add_trace(go.Scatter(x=t*1000, y=x_envIdeal, mode='lines'), row=1, col=1)
+  # Envoltoria ideal
+  fig_subplots.add_trace(go.Scatter(x=t*1000, y=x_envIdeal, mode='lines', name="Envoltória ideal"), row=1, col=1)
   fig_subplots.update_yaxes(title_text="Amplitude", row=1, col=1)
   # Onda AM retificada
-  fig_subplots.add_trace(go.Scatter(x=t*1000, y=x_AM, mode='lines'), row=2, col=1)
+  fig_subplots.add_trace(go.Scatter(x=t*1000, y=x_AM, mode='lines', name="Onda AM retificada"), row=2, col=1)
   fig_subplots.update_yaxes(title_text="Amplitude", row=2, col=1)
   # Envoltoria recuperada
-  fig_subplots.add_trace(go.Scatter(x=t*1000, y=x_env, mode='lines'), row=3, col=1)
+  fig_subplots.add_trace(go.Scatter(x=t*1000, y=x_env, mode='lines', name="Envoltória recuperada"), row=3, col=1)
   fig_subplots.update_yaxes(title_text="Amplitude", row=3, col=1)
   fig_subplots.update_xaxes(title_text="Tempo (ms)", row=3, col=1)
 
-  fig_subplots.show()
-
-  return x_envIdeal, x_env
+  return fig1, fig_subplots, mse
     ''', language='python')
 
     st.write('Códigos para a média quadratica: ')

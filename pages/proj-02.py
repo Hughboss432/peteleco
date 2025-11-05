@@ -2,9 +2,9 @@ import streamlit as st
 import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-import pandas as pd
-from scipy.io import loadmat
 from scipy import fftpack
+from scipy.fft import fft, fftfreq
+from scipy import signal
 
 st.set_page_config(page_title="Projeto U2", layout="wide")
 
@@ -417,8 +417,208 @@ with tab3:
 st.markdown('---')
 
 st.subheader(
-    'colocar proxima questão'
+    '3 - Terceira questão do projeto.'
 )
+st.write('Descrição da entrega: escreva um script em Python ou em Matlab que modele a modulação e a demodulação QAM. O seu código deve implementar:' \
+'\n* Modulação QAM' \
+'\n* Sinal portadora c(t):' \
+'\n   * Frequência da portadora = 500;' \
+'\n* Gráficos no tempo' \
+'\n* Sinal em fase m_1(t) no Tempo' \
+'\n* Sinal em fase original e sinal em fase demodulado (duas linhas no mesmo gráfico, identificadas por legenda)' \
+'\n* Sinal em quadratura m_2(t) no Tempo' \
+'\n* Sinal em quadratura original e sinal em quadratura demodulado (duas linhas no mesmo gráfico, identificadas por legenda)' \
+'\n* Gráficos na frequência' \
+'\n   * Espectro do sinal QAM' \
+'\n   * Sinal QAM no Tempo' \
+'\n   * Sinais modulante:' \
+'\n     * Sinal em fase (m_1(t)): cos(2 * pi * t)exp(-5t), com f_m = 150' \
+'\n     * Sinal em quadratura (m_2(t)): exp(-40t)' \
+'\n     * Tempo de amostragem = 1e-4;' \
+'\n     * Eixo do tempo de 0 a 1;' \
+'\n     * Frequência do sinal = 3;' \
+'\n* Espectro do sinal c(t)*m_1(t) não filtrado' \
+'\n* Espectro do sinal em fase original e sinal em fase demodulado (duas linhas no mesmo gráfico, identificadas por legenda)' \
+'\n* Espectro do sinal c(t)*m_2(t) não filtrado' \
+'\n* Espectro do sinal em quadratura original e sinal em quadratura demodulado (duas linhas no mesmo gráfico, identificadas por legenda)')
+
+tab1, tab2 = st.tabs(["Resposta para o problema", "Plot de gráficos"])
+with tab1:
+    st.write('adicionar depois')
+    st.code('''
+# Definindo variaveis
+ts=1e-4                                  # Período de amostragem
+fs=1/ts                                  # Frequencia de amostragem
+t = np.arange(5e3)*ts                    # Definição do vetor tempo
+fm = 150                                 # Frequencia do sinal em fase
+Am = 1.0                                 # Amplitude do sinal senoidal
+I = Am*np.cos(2*np.pi*fm*t)*np.exp(-t*5) # Sinal mensagem em fase
+Q = Am*np.exp(-40*t)                     # Sinal mensagem em quadratura
+
+fc = 500                                 # Frequencia da portadora
+Ac= 1.0                                  # Amplitude da portadora
+c1 = Ac*np.cos(2*np.pi*fc*t)             # Sinal portadora
+c2 = Ac*np.sin(2*np.pi*fc*t)             # Sinal portadora fase -90
+
+s = I*c1 - Q*c2                          # Sinal QAM
+s_I_dem = s*c1                           # Sinal demodulado
+s_Q_dem = s*c2                           # ---
+
+def cfft(signal):                        # Função FFT
+    N = len(signal)                      # N pontos
+    freq = fftfreq(N, 1/fs)              # Frequencia valores no tempo
+    freq = freq[:N//2]
+    fft_vals = np.abs(fft(signal))       # FFT do sinal
+    fft_vals = fft_vals[:N//2]
+    return freq, fft_vals
+
+def passa_baixa(dem_sig):                # Função passa-baixa
+    mr = 2*dem_sig                         # Demodulação
+    # Filtragem do sinal
+    nyq_rate = fs / 2.0
+    cutoff_hz = 10                         # Banda do sinal
+    h=signal.firwin(50,cutoff_hz/nyq_rate) # Coeficientes do filtro
+    mr_filtrado=signal.lfilter(h,1,mr)     # Sinal filtrado
+    return mr_filtrado
+    ''',language='python')
+    st.write('Códigos de plots dos gráficos')
+    st.code('''
+fig_qam = go.Figure()
+fig_qam.add_trace(go.Scatter(x=t, y=s, mode='lines', name='Sinal S(t) original'))
+fig_qam.update_layout(title='Sinais modulados QAM no Tempo',
+                  xaxis_title='Tempo [s]',
+                  yaxis_title='Amplitude')
+fig_qam.show()
+        
+fig_port = go.Figure()
+fig_port.add_trace(go.Scatter(x=t[:100], y=c1, mode='lines', name='Sinal da portadora c(t)'))
+fig_port.add_trace(go.Scatter(x=t[:100], y=c2, mode='lines', name='Sinal da portadora c(t) fase -90'))
+fig_port.update_layout(title='Portadoras c1 e c2(fase -90) no Tempo',
+                  xaxis_title='Tempo [s]',
+                  yaxis_title='Amplitude')
+
+fig_m11 = go.Figure()
+fig_m11.add_trace(go.Scatter(x=t, y=I, mode='lines', name='m1(t) original'))
+fig_m11.add_trace(go.Scatter(x=t, y=passa_baixa(s_I_dem), mode='lines', name='m1(t) demodulado'))
+fig_m11.update_layout(title='Sinal m1(t) original e demodulado no Tempo',
+                  xaxis_title='Tempo [s]',
+                  yaxis_title='Amplitude')
+fig_m11.show()
+        
+fm1, m1_fft = cfft(I)
+fdm1, m1_dfft = cfft(passa_baixa(s_I_dem))
+fig_m12 = go.Figure()
+fig_m12.add_trace(go.Scatter(x=fm1, y=m1_fft, mode='lines', name='m1(t) original'))
+fig_m12.add_trace(go.Scatter(x=fdm1, y=m1_dfft, mode='lines', name='m1(t) demodulado'))
+fig_m12.update_layout(title='Sinal m1(t) original e demodulado na frequência',
+                  xaxis_title='Tempo [s]',
+                  yaxis_title='Amplitude')
+fig_m12.show()
+        
+fig_m21 = go.Figure()
+fig_m21.add_trace(go.Scatter(x=t, y=Q, mode='lines', name='m2(t) original'))
+fig_m21.add_trace(go.Scatter(x=t, y=passa_baixa(s_Q_dem), mode='lines', name='m2(t) demodulado'))
+fig_m21.update_layout(title='Sinal m2(t) original e demodulado no Tempo',
+                  xaxis_title='Tempo [s]',
+                  yaxis_title='Amplitude')
+fig_m21.show()
+        
+fm2, m2_fft = cfft(Q)
+fdm2, m2_dfft = cfft(passa_baixa(s_Q_dem))
+fig_m22 = go.Figure()
+fig_m22.add_trace(go.Scatter(x=fm2, y=m2_fft, mode='lines', name='m2(t) original'))
+fig_m22.add_trace(go.Scatter(x=fdm2, y=m2_dfft, mode='lines', name='m2(t) demodulado'))
+fig_m22.update_layout(title='Sinal m2(t) original e demodulado na frequência',
+                  xaxis_title='Tempo [s]',
+                  yaxis_title='Magnitude')
+fig_m22.show()
+    ''',language='python')
+with tab2:
+    # Definindo variaveis
+    ts=1e-4                                  # Período de amostragem
+    fs=1/ts                                  # Frequencia de amostragem
+    t = np.arange(5e3)*ts                    # Definição do vetor tempo
+    fm = 150                                 # Frequencia do sinal em fase
+    Am = 1.0                                 # Amplitude do sinal senoidal
+    I = Am*np.cos(2*np.pi*fm*t)*np.exp(-t*5) # Sinal mensagem em fase
+    Q = Am*np.exp(-40*t)                     # Sinal mensagem em quadratura
+
+    fc = 500                                 # Frequencia da portadora
+    Ac= 1.0                                  # Amplitude da portadora
+    c1 = Ac*np.cos(2*np.pi*fc*t)             # Sinal portadora
+    c2 = Ac*np.sin(2*np.pi*fc*t)             # Sinal portadora fase -90
+
+    s = I*c1 - Q*c2                          # Sinal QAM
+    s_I_dem = s*c1                           # Sinal demodulado
+    s_Q_dem = s*c2                           # ---
+
+    def cfft(signal):
+        N = len(signal)                      # N pontos
+        freq = fftfreq(N, 1/fs)              # Frequencia valores no tempo
+        freq = freq[:N//2]
+        fft_vals = np.abs(fft(signal))       # FFT do sinal
+        fft_vals = fft_vals[:N//2]
+        return freq, fft_vals
+
+    def passa_baixa(dem_sig):
+        mr = 2*dem_sig                         # Demodulação
+        # Filtragem do sinal
+        nyq_rate = fs / 2.0
+        cutoff_hz = 10                         # Banda do sinal
+        h=signal.firwin(50,cutoff_hz/nyq_rate) # Coeficientes do filtro
+        mr_filtrado=signal.lfilter(h,1,mr)     # Sinal filtrado
+        return mr_filtrado
+    
+    fig_qam = go.Figure()
+    fig_qam.add_trace(go.Scatter(x=t, y=s, mode='lines', name='Sinal S(t) original'))
+    fig_qam.update_layout(title='Sinais modulados QAM no Tempo',
+                        xaxis_title='Tempo [s]',
+                        yaxis_title='Amplitude')
+    st.plotly_chart(fig_qam)
+
+    fig_port = go.Figure()
+    fig_port.add_trace(go.Scatter(x=t[:100], y=c1, mode='lines', name='Sinal da portadora c(t)'))
+    fig_port.add_trace(go.Scatter(x=t[:100], y=c2, mode='lines', name='Sinal da portadora c(t) fase -90'))
+    fig_port.update_layout(title='Portadoras c1 e c2(fase -90) no Tempo',
+                        xaxis_title='Tempo [s]',
+                        yaxis_title='Amplitude')
+    st.plotly_chart(fig_port)
+
+    fig_m11 = go.Figure()
+    fig_m11.add_trace(go.Scatter(x=t, y=I, mode='lines', name='m1(t) original'))
+    fig_m11.add_trace(go.Scatter(x=t, y=passa_baixa(s_I_dem), mode='lines', name='m1(t) demodulado'))
+    fig_m11.update_layout(title='Sinal m1(t) original e demodulado no Tempo',
+                    xaxis_title='Tempo [s]',
+                    yaxis_title='Amplitude')
+    st.plotly_chart(fig_m11)
+
+    fm1, m1_fft = cfft(I)
+    fdm1, m1_dfft = cfft(passa_baixa(s_I_dem))
+    fig_m12 = go.Figure()
+    fig_m12.add_trace(go.Scatter(x=fm1, y=m1_fft, mode='lines', name='m1(t) original'))
+    fig_m12.add_trace(go.Scatter(x=fdm1, y=m1_dfft, mode='lines', name='m1(t) demodulado'))
+    fig_m12.update_layout(title='Sinal m1(t) original e demodulado na frequência',
+                    xaxis_title='Tempo [s]',
+                    yaxis_title='Amplitude')
+    st.plotly_chart(fig_m12)
+
+    fig_m21 = go.Figure()
+    fig_m21.add_trace(go.Scatter(x=t, y=Q, mode='lines', name='m2(t) original'))
+    fig_m21.add_trace(go.Scatter(x=t, y=passa_baixa(s_Q_dem), mode='lines', name='m2(t) demodulado'))
+    fig_m21.update_layout(title='Sinal m2(t) original e demodulado no Tempo',
+                    xaxis_title='Tempo [s]',
+                    yaxis_title='Amplitude')
+    st.plotly_chart(fig_m21)
+
+    fm2, m2_fft = cfft(Q)
+    fdm2, m2_dfft = cfft(passa_baixa(s_Q_dem))
+    fig_m22 = go.Figure()
+    fig_m22.add_trace(go.Scatter(x=fm2, y=m2_fft, mode='lines', name='m2(t) original'))
+    fig_m22.add_trace(go.Scatter(x=fdm2, y=m2_dfft, mode='lines', name='m2(t) demodulado'))
+    fig_m22.update_layout(title='Sinal m2(t) original e demodulado na frequência',
+                    xaxis_title='Tempo [s]',
+                    yaxis_title='Magnitude')
+    st.plotly_chart(fig_m22)
 
 st.markdown('---')
 with st.container(horizontal=True, horizontal_alignment='center'):       # Fim da pagina

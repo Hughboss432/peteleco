@@ -510,7 +510,7 @@ fig_m12 = go.Figure()
 fig_m12.add_trace(go.Scatter(x=fm1, y=m1_fft, mode='lines', name='m1(t) original'))
 fig_m12.add_trace(go.Scatter(x=fdm1, y=m1_dfft, mode='lines', name='m1(t) demodulado'))
 fig_m12.update_layout(title='Sinal m1(t) original e demodulado na frequência',
-                  xaxis_title='Tempo [s]',
+                  xaxis_title='Frequência (Hz)',
                   yaxis_title='Amplitude')
 fig_m12.show()
         
@@ -528,7 +528,7 @@ fig_m22 = go.Figure()
 fig_m22.add_trace(go.Scatter(x=fm2, y=m2_fft, mode='lines', name='m2(t) original'))
 fig_m22.add_trace(go.Scatter(x=fdm2, y=m2_dfft, mode='lines', name='m2(t) demodulado'))
 fig_m22.update_layout(title='Sinal m2(t) original e demodulado na frequência',
-                  xaxis_title='Tempo [s]',
+                  xaxis_title='Frequência (Hz)',
                   yaxis_title='Magnitude')
 fig_m22.show()
     ''',language='python')

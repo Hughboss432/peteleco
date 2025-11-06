@@ -179,15 +179,15 @@ with tab3:
         
         return fig_time, fig_freq
 
-    st.write('* Aplicando 100% de modulação alterando a amplitude da portadora(Ac):')
+    st.write('* Aplicando 100% de modulação alterando a amplitude da portadora(Ac), se am=1,4 temos ac=1,4. Então am/ac temos ma=1:')
     u_mod_t, u_mod_f = mod_am_dsb(Ac=1.4,Am=1.4)
     st.plotly_chart(u_mod_t)
     st.plotly_chart(u_mod_f)
-    st.write('* Aplicando submodulação alterando a amplitude da portadora(Ac):')
+    st.write('* Aplicando submodulação alterando a amplitude da portadora(Ac), se am=1,4 temos ac=2,8. Então am/ac temos ma=0,5:')
     sub_mod_t, sub_mod_f = mod_am_dsb(Ac=2.8,Am=1.4)
     st.plotly_chart(sub_mod_t)
     st.plotly_chart(sub_mod_f)
-    st.write('* Aplicando sobremodulação alterando a amplitude da portadora(Ac):')
+    st.write('* Aplicando sobremodulação alterando a amplitude da portadora(Ac), se am=1,4 temos ac=0,7. Então am/ac temos ma=2:')
     sob_mod_t, sob_mod_f = mod_am_dsb(Ac=0.7,Am=1.4)
     st.plotly_chart(sob_mod_t)
     st.plotly_chart(sob_mod_f)
@@ -444,7 +444,6 @@ st.write('Descrição da entrega: escreva um script em Python ou em Matlab que m
 
 tab1, tab2 = st.tabs(["Resposta para o problema", "Plot de gráficos"])
 with tab1:
-    st.write('adicionar depois')
     st.code('''
 # Definindo variaveis
 ts=1e-4                                  # Período de amostragem

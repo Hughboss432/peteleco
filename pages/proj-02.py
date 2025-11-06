@@ -459,7 +459,7 @@ Ac= 1.0                                  # Amplitude da portadora
 c1 = Ac*np.cos(2*np.pi*fc*t)             # Sinal portadora
 c2 = Ac*np.sin(2*np.pi*fc*t)             # Sinal portadora fase -90
 
-s = I*c1 - Q*c2                          # Sinal QAM
+s = I*c1 + Q*c2                          # Sinal QAM
 s_I_dem = s*c1                           # Sinal demodulado
 s_Q_dem = s*c2                           # ---
 
@@ -547,7 +547,7 @@ with tab2:
     c1 = Ac*np.cos(2*np.pi*fc*t)             # Sinal portadora
     c2 = Ac*np.sin(2*np.pi*fc*t)             # Sinal portadora fase -90
 
-    s = I*c1 - Q*c2                          # Sinal QAM
+    s = I*c1 + Q*c2                          # Sinal QAM
     s_I_dem = s*c1                           # Sinal demodulado
     s_Q_dem = s*c2                           # ---
 
@@ -597,8 +597,8 @@ with tab2:
     fig_m12.add_trace(go.Scatter(x=fm1, y=m1_fft, mode='lines', name='m1(t) original'))
     fig_m12.add_trace(go.Scatter(x=fdm1, y=m1_dfft, mode='lines', name='m1(t) demodulado'))
     fig_m12.update_layout(title='Sinal m1(t) original e demodulado na frequência',
-                    xaxis_title='Tempo [s]',
-                    yaxis_title='Amplitude')
+                    xaxis_title='Frequência (Hz)',
+                    yaxis_title='Magnitude')
     st.plotly_chart(fig_m12)
 
     fig_m21 = go.Figure()
@@ -615,7 +615,7 @@ with tab2:
     fig_m22.add_trace(go.Scatter(x=fm2, y=m2_fft, mode='lines', name='m2(t) original'))
     fig_m22.add_trace(go.Scatter(x=fdm2, y=m2_dfft, mode='lines', name='m2(t) demodulado'))
     fig_m22.update_layout(title='Sinal m2(t) original e demodulado na frequência',
-                    xaxis_title='Tempo [s]',
+                    xaxis_title='Frequência (Hz)',
                     yaxis_title='Magnitude')
     st.plotly_chart(fig_m22)
 

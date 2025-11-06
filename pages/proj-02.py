@@ -583,6 +583,8 @@ with tab2:
         mr_filtrado=signal.lfilter(h,1,mr)     # Sinal filtrado
         return mr_filtrado
     
+    st.info('Para ocultar um subgráfico, clique na legenda do traçado que deseja ocultar!', icon="ℹ️")
+
     fig_qam = go.Figure()
     fig_qam.add_trace(go.Scatter(x=t, y=s, mode='lines', name='Sinal S(t) no tempo'))
     fig_qam.update_layout(title='Sinais modulados QAM no Tempo',

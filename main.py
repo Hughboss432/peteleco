@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.set_page_config(page_title='meu app', layout='wide')
+st.set_page_config(page_title='Loading...', layout='wide')
 
 pg = st.navigation([
     st.Page('pages/home.py', title='Inicio'),

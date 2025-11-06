@@ -483,54 +483,69 @@ def passa_baixa(dem_sig):                # Função passa-baixa
     st.write('Códigos de plots dos gráficos')
     st.code('''
 fig_qam = go.Figure()
-fig_qam.add_trace(go.Scatter(x=t, y=s, mode='lines', name='Sinal S(t) original'))
+fig_qam.add_trace(go.Scatter(x=t, y=s, mode='lines', name='Sinal S(t) no tempo'))
 fig_qam.update_layout(title='Sinais modulados QAM no Tempo',
-                  xaxis_title='Tempo [s]',
-                  yaxis_title='Amplitude')
-fig_qam.show()
-        
+                    xaxis_title='Tempo [s]',
+                    yaxis_title='Amplitude')
+st.plotly_chart(fig_qam)
+
+fqam, qam_fft = cfft(s)
+fig_qamf = go.Figure()
+fig_qamf.add_trace(go.Scatter(x=fqam, y=qam_fft, mode='lines', name='Sinal S(t) na frequência'))
+fig_qamf.update_layout(title='Sinais modulados QAM na frequência',
+                xaxis_title='Frequência (Hz)',
+                yaxis_title='Magnitude')
+st.plotly_chart(fig_qamf)
+
 fig_port = go.Figure()
 fig_port.add_trace(go.Scatter(x=t[:100], y=c1, mode='lines', name='Sinal da portadora c(t)'))
 fig_port.add_trace(go.Scatter(x=t[:100], y=c2, mode='lines', name='Sinal da portadora c(t) fase -90'))
 fig_port.update_layout(title='Portadoras c1 e c2(fase -90) no Tempo',
-                  xaxis_title='Tempo [s]',
-                  yaxis_title='Amplitude')
+                    xaxis_title='Tempo [s]',
+                    yaxis_title='Amplitude')
+st.plotly_chart(fig_port)
 
 fig_m11 = go.Figure()
-fig_m11.add_trace(go.Scatter(x=t, y=I, mode='lines', name='m1(t) original'))
-fig_m11.add_trace(go.Scatter(x=t, y=passa_baixa(s_I_dem), mode='lines', name='m1(t) demodulado'))
-fig_m11.update_layout(title='Sinal m1(t) original e demodulado no Tempo',
-                  xaxis_title='Tempo [s]',
-                  yaxis_title='Amplitude')
-fig_m11.show()
-        
+fig_m11.add_trace(go.Scatter(x=t, y=I, mode='lines', name='original'))
+fig_m11.add_trace(go.Scatter(x=t, y=s_I_dem, mode='lines', name='dem(sem filtro)'))
+fig_m11.add_trace(go.Scatter(x=t, y=passa_baixa(s_I_dem), mode='lines', name='dem(com filtro)'))
+fig_m11.update_layout(title='Sinal m1(t) original, demodulado(sem filtro) e demodulado(com filtro) no Tempo',
+                xaxis_title='Tempo [s]',
+                yaxis_title='Amplitude')
+st.plotly_chart(fig_m11)
+
 fm1, m1_fft = cfft(I)
 fdm1, m1_dfft = cfft(passa_baixa(s_I_dem))
+fdsfm1, m1_dsffft = cfft(s_I_dem)
 fig_m12 = go.Figure()
-fig_m12.add_trace(go.Scatter(x=fm1, y=m1_fft, mode='lines', name='m1(t) original'))
-fig_m12.add_trace(go.Scatter(x=fdm1, y=m1_dfft, mode='lines', name='m1(t) demodulado'))
-fig_m12.update_layout(title='Sinal m1(t) original e demodulado na frequência',
-                  xaxis_title='Frequência (Hz)',
-                  yaxis_title='Amplitude')
-fig_m12.show()
-        
+fig_m12.add_trace(go.Scatter(x=fm1, y=m1_fft, mode='lines', name='original'))
+fig_m12.add_trace(go.Scatter(x=fdsfm1, y=m1_dsffft, mode='lines', name='dem(sem filtro)'))
+fig_m12.add_trace(go.Scatter(x=fdm1, y=m1_dfft, mode='lines', name='dem(com filtro)'))
+fig_m12.update_layout(title='Sinal m1(t) original, demodulado(sem filtro) e demodulado(com filtro) na frequência',
+                xaxis_title='Frequência (Hz)',
+                yaxis_title='Magnitude')
+st.plotly_chart(fig_m12)
+
 fig_m21 = go.Figure()
-fig_m21.add_trace(go.Scatter(x=t, y=Q, mode='lines', name='m2(t) original'))
-fig_m21.add_trace(go.Scatter(x=t, y=passa_baixa(s_Q_dem), mode='lines', name='m2(t) demodulado'))
-fig_m21.update_layout(title='Sinal m2(t) original e demodulado no Tempo',
-                  xaxis_title='Tempo [s]',
-                  yaxis_title='Amplitude')
-fig_m21.show()
-        
+fig_m21.add_trace(go.Scatter(x=t, y=Q, mode='lines', name='original'))
+fig_m21.add_trace(go.Scatter(x=t, y=s_Q_dem, mode='lines', name='dem(sem filtro)'))
+fig_m21.add_trace(go.Scatter(x=t, y=passa_baixa(s_Q_dem), mode='lines', name='dem(com filtro)'))
+fig_m21.update_layout(title='Sinal m2(t) original, demodulado(sem filtro) e demodulado(com filtro) no Tempo',
+                xaxis_title='Tempo [s]',
+                yaxis_title='Amplitude')
+st.plotly_chart(fig_m21)
+
 fm2, m2_fft = cfft(Q)
+fdsfm2, m2_dsffft = cfft(s_Q_dem)
 fdm2, m2_dfft = cfft(passa_baixa(s_Q_dem))
 fig_m22 = go.Figure()
-fig_m22.add_trace(go.Scatter(x=fm2, y=m2_fft, mode='lines', name='m2(t) original'))
-fig_m22.add_trace(go.Scatter(x=fdm2, y=m2_dfft, mode='lines', name='m2(t) demodulado'))
-fig_m22.update_layout(title='Sinal m2(t) original e demodulado na frequência',
-                  xaxis_title='Frequência (Hz)',
-                  yaxis_title='Magnitude')
-fig_m22.show()
+fig_m22.add_trace(go.Scatter(x=fm2, y=m2_fft, mode='lines', name='original'))
+fig_m22.add_trace(go.Scatter(x=fdsfm2, y=m2_dsffft, mode='lines', name='dem(sem filtro)'))
+fig_m22.add_trace(go.Scatter(x=fdm2, y=m2_dfft, mode='lines', name='dem(com filtro)'))
+fig_m22.update_layout(title='Sinal m2(t) original, demodulado(sem filtro) e demodulado(com filtro) na frequência',
+                xaxis_title='Frequência (Hz)',
+                yaxis_title='Magnitude')
+st.plotly_chart(fig_m22)
     ''',language='python')
 with tab2:
     # Definindo variaveis
@@ -569,11 +584,19 @@ with tab2:
         return mr_filtrado
     
     fig_qam = go.Figure()
-    fig_qam.add_trace(go.Scatter(x=t, y=s, mode='lines', name='Sinal S(t) original'))
+    fig_qam.add_trace(go.Scatter(x=t, y=s, mode='lines', name='Sinal S(t) no tempo'))
     fig_qam.update_layout(title='Sinais modulados QAM no Tempo',
                         xaxis_title='Tempo [s]',
                         yaxis_title='Amplitude')
     st.plotly_chart(fig_qam)
+
+    fqam, qam_fft = cfft(s)
+    fig_qamf = go.Figure()
+    fig_qamf.add_trace(go.Scatter(x=fqam, y=qam_fft, mode='lines', name='Sinal S(t) na frequência'))
+    fig_qamf.update_layout(title='Sinais modulados QAM na frequência',
+                    xaxis_title='Frequência (Hz)',
+                    yaxis_title='Magnitude')
+    st.plotly_chart(fig_qamf)
 
     fig_port = go.Figure()
     fig_port.add_trace(go.Scatter(x=t[:100], y=c1, mode='lines', name='Sinal da portadora c(t)'))
@@ -584,37 +607,43 @@ with tab2:
     st.plotly_chart(fig_port)
 
     fig_m11 = go.Figure()
-    fig_m11.add_trace(go.Scatter(x=t, y=I, mode='lines', name='m1(t) original'))
-    fig_m11.add_trace(go.Scatter(x=t, y=passa_baixa(s_I_dem), mode='lines', name='m1(t) demodulado'))
-    fig_m11.update_layout(title='Sinal m1(t) original e demodulado no Tempo',
+    fig_m11.add_trace(go.Scatter(x=t, y=I, mode='lines', name='original'))
+    fig_m11.add_trace(go.Scatter(x=t, y=s_I_dem, mode='lines', name='dem(sem filtro)'))
+    fig_m11.add_trace(go.Scatter(x=t, y=passa_baixa(s_I_dem), mode='lines', name='dem(com filtro)'))
+    fig_m11.update_layout(title='Sinal m1(t) original, demodulado(sem filtro) e demodulado(com filtro) no Tempo',
                     xaxis_title='Tempo [s]',
                     yaxis_title='Amplitude')
     st.plotly_chart(fig_m11)
 
     fm1, m1_fft = cfft(I)
     fdm1, m1_dfft = cfft(passa_baixa(s_I_dem))
+    fdsfm1, m1_dsffft = cfft(s_I_dem)
     fig_m12 = go.Figure()
-    fig_m12.add_trace(go.Scatter(x=fm1, y=m1_fft, mode='lines', name='m1(t) original'))
-    fig_m12.add_trace(go.Scatter(x=fdm1, y=m1_dfft, mode='lines', name='m1(t) demodulado'))
-    fig_m12.update_layout(title='Sinal m1(t) original e demodulado na frequência',
+    fig_m12.add_trace(go.Scatter(x=fm1, y=m1_fft, mode='lines', name='original'))
+    fig_m12.add_trace(go.Scatter(x=fdsfm1, y=m1_dsffft, mode='lines', name='dem(sem filtro)'))
+    fig_m12.add_trace(go.Scatter(x=fdm1, y=m1_dfft, mode='lines', name='dem(com filtro)'))
+    fig_m12.update_layout(title='Sinal m1(t) original, demodulado(sem filtro) e demodulado(com filtro) na frequência',
                     xaxis_title='Frequência (Hz)',
                     yaxis_title='Magnitude')
     st.plotly_chart(fig_m12)
 
     fig_m21 = go.Figure()
-    fig_m21.add_trace(go.Scatter(x=t, y=Q, mode='lines', name='m2(t) original'))
-    fig_m21.add_trace(go.Scatter(x=t, y=passa_baixa(s_Q_dem), mode='lines', name='m2(t) demodulado'))
-    fig_m21.update_layout(title='Sinal m2(t) original e demodulado no Tempo',
+    fig_m21.add_trace(go.Scatter(x=t, y=Q, mode='lines', name='original'))
+    fig_m21.add_trace(go.Scatter(x=t, y=s_Q_dem, mode='lines', name='dem(sem filtro)'))
+    fig_m21.add_trace(go.Scatter(x=t, y=passa_baixa(s_Q_dem), mode='lines', name='dem(com filtro)'))
+    fig_m21.update_layout(title='Sinal m2(t) original, demodulado(sem filtro) e demodulado(com filtro) no Tempo',
                     xaxis_title='Tempo [s]',
                     yaxis_title='Amplitude')
     st.plotly_chart(fig_m21)
 
     fm2, m2_fft = cfft(Q)
+    fdsfm2, m2_dsffft = cfft(s_Q_dem)
     fdm2, m2_dfft = cfft(passa_baixa(s_Q_dem))
     fig_m22 = go.Figure()
-    fig_m22.add_trace(go.Scatter(x=fm2, y=m2_fft, mode='lines', name='m2(t) original'))
-    fig_m22.add_trace(go.Scatter(x=fdm2, y=m2_dfft, mode='lines', name='m2(t) demodulado'))
-    fig_m22.update_layout(title='Sinal m2(t) original e demodulado na frequência',
+    fig_m22.add_trace(go.Scatter(x=fm2, y=m2_fft, mode='lines', name='original'))
+    fig_m22.add_trace(go.Scatter(x=fdsfm2, y=m2_dsffft, mode='lines', name='dem(sem filtro)'))
+    fig_m22.add_trace(go.Scatter(x=fdm2, y=m2_dfft, mode='lines', name='dem(com filtro)'))
+    fig_m22.update_layout(title='Sinal m2(t) original, demodulado(sem filtro) e demodulado(com filtro) na frequência',
                     xaxis_title='Frequência (Hz)',
                     yaxis_title='Magnitude')
     st.plotly_chart(fig_m22)

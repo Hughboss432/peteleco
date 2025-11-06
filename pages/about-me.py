@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.set_page_config(page_title='About Me', layout='wide')
+st.set_page_config(page_title='Desenvolvedor', layout='wide')
 
 with st.container(horizontal=True, horizontal_alignment='center'):
     col1, col2, col3 = st.columns([1,2,1])
